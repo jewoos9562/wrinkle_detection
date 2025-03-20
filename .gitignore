@@ -1,0 +1,18 @@
+# 이미지 파일 제외
+*.png
+*.jpg
+*.jpeg
+*.bmp
+*.tiff
+*.json
+
+# 모델 파일 제외
+*.pth
+*.onnx
+*.ckpt
+*.h5
+*.pt
+
+# 캐시 파일 및 로그 파일 제외
+*.log
+*.cache
