@@ -7,9 +7,15 @@ from tqdm import tqdm
 if __name__ == '__main__':
 
     # Edit your path
-    path_src = '/root/skin/wrinkle/dataset/textures'
-    path_pgt = '/root/skin/wrinkle/dataset/masks_resized'
-    path_dst = '/root/skin/wrinkle/dataset/GT'
+    # path_src = '/root/skin/wrinkle/dataset/train/textures'
+    # path_pgt = '/root/skin/wrinkle/dataset/train/masks_resized'
+    # path_dst = '/root/skin/wrinkle/dataset/train/GT'
+
+    path_src = '/root/skin/wrinkle/dataset/test/textures'
+    path_pgt = '/root/skin/wrinkle/dataset/test/masks_resized'
+    path_dst = '/root/skin/wrinkle/dataset/test/GT'
+
+
     if os.path.isdir(path_dst) == False:
         os.makedirs(path_dst)
 

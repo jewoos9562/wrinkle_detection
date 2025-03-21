@@ -47,25 +47,44 @@ def inference(model, image_tensor, texture_tensor, device):
     
     return score[:, 1, :, :]
 
-def save_results(output_mask, original_image, original_size, filename, output_dir, overlay_dir):
-    output_mask_resized = cv2.resize(output_mask, (original_size[1], original_size[0]), interpolation=cv2.INTER_NEAREST)
-    
-    # 마스크 저장
-    output_path = os.path.join(output_dir, filename.replace('.png', '_mask.png'))
-    cv2.imwrite(output_path, (output_mask_resized > 0.5).astype(np.uint8) * 255)
+def save_results(
+    output_mask,
+    original_image,
+    original_size,
+    filename,
+    mask_640_dir,
+    mask_orig_dir,
+    overlay_640_dir,
+    overlay_orig_dir
+):
+    # 1. 마스크 - 640x640
+    mask_640 = cv2.resize(output_mask, (640, 640), interpolation=cv2.INTER_NEAREST)
+    mask_640_bin = (mask_640 > 0.5).astype(np.uint8) * 255
+    path_mask_640 = os.path.join(mask_640_dir, filename)
+    cv2.imwrite(path_mask_640, mask_640_bin)
 
-    # 원본 이미지를 다시 BGR로 변환
-    original_image_bgr = cv2.cvtColor(original_image, cv2.COLOR_RGB2BGR)
+    # 2. 마스크 - 원본 사이즈
+    mask_orig = cv2.resize(output_mask, (original_size[1], original_size[0]), interpolation=cv2.INTER_NEAREST)
+    mask_orig_bin = (mask_orig > 0.5).astype(np.uint8) * 255
+    path_mask_orig = os.path.join(mask_orig_dir, filename)
+    cv2.imwrite(path_mask_orig, mask_orig_bin)
 
-    # Overlay 적용
-    overlay = original_image_bgr.copy()
-    mask_indices = output_mask_resized > 0.5
-    overlay[mask_indices] = [255, 0, 0]  # 빨간색 (BGR)
-    blended = cv2.addWeighted(original_image_bgr, 0.7, overlay, 0.3, 0)
+    # 3. 오버레이 - 640x640
+    original_bgr = cv2.cvtColor(original_image, cv2.COLOR_RGB2BGR)
+    image_640 = cv2.resize(original_bgr, (640, 640))
+    overlay_640 = image_640.copy()
+    overlay_640[mask_640 > 0.5] = [255, 0, 0]
+    blended_640 = cv2.addWeighted(image_640, 0.7, overlay_640, 0.3, 0)
+    path_overlay_640 = os.path.join(overlay_640_dir, filename)
+    cv2.imwrite(path_overlay_640, blended_640)
 
-    # 오버레이 저장
-    overlay_path = os.path.join(overlay_dir, filename.replace('.png', '_overlay.png'))
-    cv2.imwrite(overlay_path, blended)
+    # 4. 오버레이 - 원본 사이즈
+    overlay_orig = original_bgr.copy()
+    overlay_orig[mask_orig > 0.5] = [255, 0, 0]
+    blended_orig = cv2.addWeighted(original_bgr, 0.7, overlay_orig, 0.3, 0)
+    path_overlay_orig = os.path.join(overlay_orig_dir, filename)
+    cv2.imwrite(path_overlay_orig, blended_orig)
+
 
 
 if __name__ == '__main__':
@@ -76,17 +95,25 @@ if __name__ == '__main__':
         print('Count of using GPUs:', torch.cuda.device_count())
 
     # Paths
-    path_src = '/root/skin/wrinkle/dataset/test_images'
-    path_ttr = '/root/skin/wrinkle/dataset/test_textures'
-    output_dir = '/root/skin/wrinkle/dataset/test_output_masks_2'
-    overlay_dir = '/root/skin/wrinkle/dataset/test_output_overlays_2'
-    os.makedirs(output_dir, exist_ok=True)
-    os.makedirs(overlay_dir, exist_ok=True)
+    path_src = '/root/skin/wrinkle/dataset/test/images'
+    path_ttr = '/root/skin/wrinkle/dataset/test/textures'
+    # output_dir = '/root/skin/wrinkle/dataset/test/results/output_masks_3'
+    # overlay_dir = '/root/skin/wrinkle/dataset/test/results/output_overlays_3'
+
+    mask_640_dir="/root/skin/wrinkle/dataset/test/results/output_masks_2_640"
+    mask_orig_dir="/root/skin/wrinkle/dataset/test/results/output_masks_2"
+    overlay_640_dir="/root/skin/wrinkle/dataset/test/results/output_overlays_2_640"
+    overlay_orig_dir="/root/skin/wrinkle/dataset/test/results/output_overlays_2"
+
+    os.makedirs(mask_640_dir, exist_ok=True)
+    os.makedirs(mask_orig_dir,exist_ok=True)
+    os.makedirs(overlay_640_dir, exist_ok=True)
+    os.makedirs(overlay_orig_dir, exist_ok=True)
     
     # Load model
     model = UNet_texture_front_ds(4, 2).to(device)
-    #fns_mdl = '/root/skin/save_model/WRINKLE_WDS/model_epoch_156_jsi_0.3335.pth'
-    fns_mdl='/root/skin/wrinkle/saved_model/20250319_0/model_epoch_144_jsi_0.3236.pth'
+    fns_mdl = '/root/skin/wrinkle/saved_model/20250319_0/model_epoch_144_jsi_0.3236.pth'
+    #fns_mdl='/root/skin/wrinkle/saved_model/WRINKLE_WDS/model_epoch_104_jsi_0.3293.pth'
     model.load_state_dict(torch.load(fns_mdl, map_location=device), strict=True)
     model.eval()
 
@@ -101,8 +128,21 @@ if __name__ == '__main__':
         
         image_tensor, original_image, original_size = preprocess_image(image_path)
         texture_tensor = preprocess_texture(texture_path)
+
+
         
         output_mask = inference(model, image_tensor, texture_tensor, device)
-        save_results(output_mask[0], original_image, original_size, filename, output_dir, overlay_dir)
-    
+        #save_results(output_mask[0], original_image, original_size, filename, output_dir, overlay_dir)
+        save_results(
+                output_mask[0],
+                original_image,
+                original_size,
+                filename,
+                mask_640_dir= mask_640_dir,
+                mask_orig_dir= mask_orig_dir,
+                overlay_640_dir= overlay_640_dir,
+                overlay_orig_dir=overlay_orig_dir
+        )
+
+
     print("Inference completed. Masks and overlay images saved.")

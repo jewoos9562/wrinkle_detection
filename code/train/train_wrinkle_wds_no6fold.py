@@ -49,9 +49,9 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
     # Edit your path
-    path_src = '/root/skin/wrinkle/dataset/images_resized'
-    path_ttr = '/root/skin/wrinkle/dataset/textures'
-    path_gnd = '/root/skin/wrinkle/dataset/GT'
+    path_src = '/root/skin/wrinkle/dataset/train/images_resized'
+    path_ttr = '/root/skin/wrinkle/dataset/train/textures'
+    path_gnd = '/root/skin/wrinkle/dataset/train/GT'
 
     list_src = os.listdir(path_src)
     random.shuffle(list_src)
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                                              batch_size=val_batch_size, shuffle=False,
                                              num_workers=2)
 
-    str_log = 'WRINKLE_WDS'
+    str_log = '20250321_0'
     path_save = '/root/skin/wrinkle/saved_model/%s' % str_log
     if os.path.isdir(path_save) == False:
         os.makedirs((path_save))

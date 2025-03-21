@@ -5,9 +5,9 @@ import numpy as np
 from tqdm import tqdm
 
 # 경로 설정
-path_src = '/root/skin/wrinkle/dataset/test_images'  # 원본 이미지 경로
-path_dst_texture = '/root/skin/wrinkle/dataset/test_textures'  # 텍스처 저장 경로
-path_dst_resized = '/root/skin/wrinkle/dataset/test_images_resized'  # 리사이즈된 원본 저장 경로
+path_src = '/root/skin/wrinkle/dataset/test/test_images'  # 원본 이미지 경로
+path_dst_texture = '/root/skin/wrinkle/dataset/test/test_textures'  # 텍스처 저장 경로
+path_dst_resized = '/root/skin/wrinkle/dataset/test/test_images_resized'  # 리사이즈된 원본 저장 경로
 
 # 필요한 폴더 생성
 os.makedirs(path_dst_texture, exist_ok=True)

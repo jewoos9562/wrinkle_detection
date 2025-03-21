@@ -6,11 +6,20 @@ import json
 from tqdm import tqdm
 
 # 경로 설정
-path_src = '/root/skin/wrinkle/dataset/images'  # 원본 이미지 경로
-path_dst_texture = '/root/skin/wrinkle/dataset/textures'  # 텍스처 저장 경로
-path_dst_resized = '/root/skin/wrinkle/dataset/images_resized'  # 리사이즈된 원본 저장 경로
-path_annotations = '/root/skin/wrinkle/dataset/annotations'  # 주름 JSON 파일 경로
-path_masks_resized = '/root/skin/wrinkle/dataset/masks_resized'  # 리사이즈된 마스크 저장 경로
+# path_src = '/root/skin/wrinkle/dataset/train/images'  # 원본 이미지 경로
+# path_dst_texture = '/root/skin/wrinkle/dataset/train/textures'  # 텍스처 저장 경로
+# path_dst_resized = '/root/skin/wrinkle/dataset/train/images_resized'  # 리사이즈된 원본 저장 경로
+# path_annotations = '/root/skin/wrinkle/dataset/train/annotations'  # 주름 JSON 파일 경로
+# path_masks_resized = '/root/skin/wrinkle/dataset/train/masks_resized'  # 리사이즈된 마스크 저장 경로
+
+path_src = '/root/skin/wrinkle/dataset/test/images'  # 원본 이미지 경로
+path_dst_texture = '/root/skin/wrinkle/dataset/test/textures'  # 텍스처 저장 경로
+path_dst_resized = '/root/skin/wrinkle/dataset/test/images_resized'  # 리사이즈된 원본 저장 경로
+path_annotations = '/root/skin/wrinkle/dataset/test/annotations'  # 주름 JSON 파일 경로
+path_masks_resized = '/root/skin/wrinkle/dataset/test/masks_resized'  # 리사이즈된 마스크 저장 경로
+
+
+
 
 # 필요한 폴더 생성
 os.makedirs(path_dst_texture, exist_ok=True)
